@@ -1,0 +1,20 @@
+Пусть $\{\Omega,\; \mathcal{F},\; (\mathcal{F}_t)_{t \in T},\; \mathbb{P}\}$ --- фильтрованное вероятностное пространство, $X_t$ --- согласованный с фильтрацией случайный процесс, означающий цену актива. 
+Тогда задачей оптимальной продажи впределах интервала $[0,\; T]$ будет являться решения следующей задачи:
+\begin{align}
+    \Expect{X_{t}} \to \max,\; t \leq T
+\end{align}
+и оптимального момента остановки $\tau^{*}$,
+\begin{align}
+    \tau^{*} = \inf\limits_{\tau \leq T}\left(\sup\limits_{\tau \leq t \leq T} \{\Expect{X_{t} \mid \mathcal{F}_{\tau}}\} \leq X_{\tau} \right)
+\end{align}
+
+В данном случае рассматриваются фильтрация 
+\begin{align}
+    \mathcal{F}_t = \sigma\left(X_s,\; s \leq t,\; -b - y \cdot t \leq X_{\tau} \leq a + x \cdot t,\; \tau \leq T\right),\; t \leq T
+\end{align}
+и случайное блуждание 
+\begin{align}
+    X_n = \left(S_n \mid -b - y \cdot k \leq S_{k} \leq a + x \cdot k,\; k \in \{1,\ldots, N\}\right).
+\end{align}
+
+Без ограничения общности можно предполагать симметричные границы, так как несимметричные границы можно свести к симметричным \textcolor{red}{TODO: описать переход}.

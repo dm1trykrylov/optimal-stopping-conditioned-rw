@@ -1,0 +1,33 @@
+Так же, как в работе \cite{Kulikov2017}, введём функцию
+\begin{equation}
+	m(n, k) = \sup\limits_{n \leq \tau \leq N} \Expect{X_{\tau} \mid X_{n} = k},
+\end{equation}
+где $ n = 1,\ldots, N $. Если $ m(n, k) = k$, то данное состояние $(n, k)$, где $n$ --- момент времени, а $ X_n = k$ --- состояние случайного
+процесса $X_n$, является решением задачи об оптимальной остановке.
+
+Заметим, что $ \forall k \; m(N,k) = k$.
+Также так как при вычислении этой функции используются только шаги от текущего до последнего, значение на $n$-м шаге можно выразить через значения на следующем. Для этого при нахождении супремума мы отделяем $X_n$ и преобразуем матожидание по определению:
+\begin{align}
+	 & m(n, k) = \sup\limits_{n \leq \tau \leq N} \Expect{X_{\tau} \mid X_{n} = k} = \max \left(k, \sup\limits_{n + 1 \leq \tau \leq N} \Expect{X_{\tau} \mid X_{n} = k}\right) \label{s01:eq:mnk_start} \\
+	 & \Expect{X_{\tau} \mid X_{n} = k} = \sum_{p} p \cdot \Pr{X_{\tau} = p \mid X_{n} = k} \label{s01:eq:mnk_expect}                                                                                    \\
+	 & \Pr{X_{\tau} = p \mid X_{n} = k} = \frac{\Pr{X_{\tau} = p ,\; X_{n} = k}}{\Pr{X_{n} = k}} = \frac{\Pr{X_{\tau} = p ,\; X_{n} = k ,\; X_{n+1} = k\pm1}}{\Pr{X_{n} = k}} =                          \\
+	 & = \frac{\Pr{X_{\tau} = p \mid X_{n} = k,\; X_{n+1} = k+1} \cdot \Pr{X_{n} = k,\; X_{n+1} = k+1}}{\Pr{X_{n} = k}} +                                                                                \\
+	 & + \frac{\Pr{X_{\tau} = p \mid X_{n} = k,\; X_{n-1} = k-1} \cdot \Pr{X_{n} = k,\; X_{n+1} = k-1}}{\Pr{X_{n} = k}} \label{s01:eq:sum_probs}                                                         \\
+\end{align}
+Удобно ввести обозначение для вероятности из значения $k$ на $n$-м шаге перейти выше, то есть в $k+1$ на следующем шаге: $ p(n,k) = \Pr{X_{n+1} = k+1 \mid X_{n} = k}$. По условию мы также получаем $ \Pr{X_{n+1} = k-1 \mid X_{n} = k} = (1 - p(n,k))$. После подстановки \eqref{s01:eq:sum_probs} в исходные выражения \eqref{s01:eq:mnk_expect} и \eqref{s01:eq:mnk_start} получается искомая зависимость:
+\begin{align}
+	 & \Expect{X_{\tau} \mid X_{n} = k} = \Expect{X_{\tau} \mid X_{n + 1} = k + 1, X_{n} = k} \cdot p(n, k) + \\
+	 & + \Expect{X_{\tau} \mid X_{n + 1} = k - 1, X_{n} = k} \cdot (1 - p(n, k)) \Rightarrow                  \\
+	 & m(n, k) = \max \left(k,\; p(n, k) \cdot m(n + 1, k + 1) + (1 - p(n, k)) \cdot m(n + 1, k - 1)\right).
+\end{align}
+
+Вероятность перехода $p(n, k)$ также может быть вычислена рекурсивно, если выразить её через число траекторий $l(n, k)$, удовлетворяющих исходным условиям и проходящих через состояние $(n, k)$:
+\begin{align}
+	 & p(n, k) = \Pr{X_{n+1} = k+1 \mid X_{n} = k} = \frac{l(n + 1, k + 1)}{l(n, k)},                              \\
+	 & l(n, k) = \begin{cases}
+		             l(n + 1, k - 1),                   & a + x \cdot (n + 1) + 1 \geq k + 1 > a + x \cdot (n + 1)     \\
+		             l(n + 1, k + 1),                   & -b - y \cdot (n + 1) - 1 \leq k - 1 < -b - y \cdot (n + 1)   \\
+		             l(n + 1, k - 1) + l(n + 1, k + 1), & -b - y \cdot (k + 1) + 1 \leq k \leq a + x \cdot (k + 1) - 1 \\
+		             0,                                 & \text{иначе}
+	             \end{cases}
+\end{align}
