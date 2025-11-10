@@ -1,3 +1,12 @@
+Без ограничения общности можно предполагать симметричные границы, так как несимметричные границы можно свести к симметричным, см. рис. \ref{s01:fig:rotation_example}. \textcolor{red}{Здесь будет описан переход}.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{./images/rotation_example.png}
+	\caption{Пример перехода к симметричным границам}
+	\label{s01:fig:rotation_example}
+\end{figure}
+
 Так же, как в работе \cite{Kulikov2017}, введём функцию
 \begin{equation}
 	m(n, k) = \sup\limits_{n \leq \tau \leq N} \Expect{X_{\tau} \mid X_{n} = k},
@@ -31,3 +40,11 @@
 		             0,                                 & \text{иначе}
 	             \end{cases}
 \end{align}
+
+На рис. \ref{s01:fig:mnk_example} приведён пример вычисления значения $m(n,k)$ с помощью формул, полученных выше.
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=\linewidth]{./images/mnk_example.png}
+	\caption{Пример вычисления $m(n, k)$ для N = 6 и ограничений $ -2 \leq X_n \leq 2 + n$}
+	\label{s01:fig:mnk_example}
+\end{figure}
