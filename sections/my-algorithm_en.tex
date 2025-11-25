@@ -1,0 +1,57 @@
+
+\begin{algorithm}
+	\caption{Recursive computation of $\ell(n,k)$, $p(n,k)$, and $m(n,k)$}
+	\label{alg:lpmm}
+	\begin{algorithmic}[1]
+
+		\STATE \textbf{Input:} Horizon $N$; bounds $L(n)$ and $U(n)$.
+		\STATE Define the admissible set $V_n = \{ k \in \mathbb{Z} : L(n) \le k \le U(n) \}$.
+
+		\STATE
+
+		\STATE \textbf{Step 1: Initialize terminal values.}
+		\FOR{each $k \in V_N$}
+		\STATE $\ell(N,k) \gets 1$
+		\STATE $m(N,k) \gets k$
+		\ENDFOR
+
+		\STATE
+
+		\STATE \textbf{Step 2: Backward recursion for $\ell(n,k)$.}
+		\FOR{$n = N-1, N-2, \dots, 0$}
+		\FOR{each $k \in V_n$}
+		\STATE $\ell(n,k) \gets \ell(n+1,k+1) + \ell(n+1,k-1)$
+		\ENDFOR
+		\ENDFOR
+
+		\STATE
+
+		\STATE \textbf{Step 3: Conditioned up-step probability $p(n,k)$.}
+		\FOR{$n = 0, 1, \dots, N-1$}
+		\FOR{each $k \in V_n$}
+		\IF{$\ell(n,k) = 0$}
+		\STATE $p(n,k) \gets 0$
+		\ELSE
+		\STATE $p(n,k) \gets \ell(n+1,k+1) / \ell(n,k)$
+		\ENDIF
+		\ENDFOR
+		\ENDFOR
+
+		\STATE
+
+		\STATE \textbf{Step 4: Backward recursion for Snell envelope $m(n,k)$.}
+		\FOR{$n = N-1, N-2, \dots, 0$}
+		\FOR{each $k \in V_n$}
+		\STATE $\text{cont} \gets p(n,k) \, m(n+1,k+1) + (1 - p(n,k)) \, m(n+1,k-1)$
+		\STATE $m(n,k) \gets \max \{ k, \text{cont} \}$
+		\ENDFOR
+		\ENDFOR
+
+		\STATE
+
+		\STATE \textbf{Output:} The functions $\ell(n,k)$, $p(n,k)$, and $m(n,k)$
+		for all $0 \le n \le N$ and all $k \in V_n$.
+
+	\end{algorithmic}
+\end{algorithm}
+
