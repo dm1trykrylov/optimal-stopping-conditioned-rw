@@ -68,6 +68,7 @@ def compute_paths_probs_values(N: int, lower_bound: Callable[[int], float], uppe
         lo = int(math.ceil(lower_bound(n)))
         hi = int(math.floor(upper_bound(n)))
         valid[n] = list(range(lo, hi + 1))
+        print(lo, hi)
 
     # Terminal condition for paths_remaining
     for k in valid[N]:
