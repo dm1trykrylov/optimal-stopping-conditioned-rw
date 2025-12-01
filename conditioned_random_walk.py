@@ -6,6 +6,8 @@ from collections import defaultdict
 import math
 import csv
 from typing import Callable
+from numpy.typing import NDArray
+import numpy as np
 
 
 log_path = '.'
@@ -31,7 +33,7 @@ def log(event_type : str, payload : dict, mode : str = "a"):
     # Open log file (overwrite mode)
     with open(log_path, mode) as log_file:
         entry = {
-            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.datetime.now().isoformat() + "Z",
             "event": event_type,
             "data": payload,
         }
@@ -43,7 +45,7 @@ def log(event_type : str, payload : dict, mode : str = "a"):
 # ---------------------------
 
 
-def compute_paths_probs_values(N: int, lower_bound: Callable[[int], float], upper_bound: Callable[[int], float]):
+def compute_paths_probs_values(N: int, lower_bound: Callable[[int], np.float64], upper_bound: Callable[[int], np.float64]):
     """
     Compute the combinatorial counts (paths_remaining), the conditioned up-probabilities (p_up),
     and the optimal value (opt_value, m(n,k)) on the full valid grid defined by bounds.
@@ -133,7 +135,7 @@ def compute_reachability(N: int, valid: dict[int, list[int]]):
     return reachable
 
 
-def compute_thresholds(N: int, opt_value: dict[tuple[int, int], float], valid: dict[int, list[int]], reachable: dict[int, dict[int, int]], tol: float = 1e-12):
+def compute_thresholds(N: int, opt_value: dict[tuple[int, int], np.float64], valid: dict[int, list[int]], reachable: dict[int, dict[int, int]], tol: np.float64 = np.float64(1e-12)):
     """
     Compute threshold x(n) = minimal k with opt_value(n,k) == k.
     Return two dictionaries:
@@ -144,13 +146,44 @@ def compute_thresholds(N: int, opt_value: dict[tuple[int, int], float], valid: d
     threshold_reach = {}
     for n in range(N + 1):
         eqs = [k for k in valid[n] if abs(
-            opt_value.get((n, k), float('inf')) - k) < tol]
+            opt_value.get((n, k), np.float64('inf')) - k) < tol]
         threshold_all[n] = min(eqs) if eqs else None
 
         # if reachable is not None:
         eqs_r = [k for k in valid[n] if reachable[n].get(k, 0) and abs(
-            opt_value.get((n, k), float('inf')) - k) < tol]
+            opt_value.get((n, k), np.float64('inf')) - k) < tol]
         threshold_reach[n] = min(eqs_r) if eqs_r else None
         # else:
         #    threshold_reach[n] = None
     return threshold_all, threshold_reach
+
+
+class TheoreticalEstimator:
+    """ 
+    """
+    def __init__(self, N: int, lower_bound: Callable[[int], np.float64], upper_bound: Callable[[int], np.float64]) -> None:
+        self.N = N
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+    def fit(self):
+        """
+        Compute the combinatorial counts (paths_remaining), the conditioned up-probabilities (p_up), 
+        and the optimal value (opt_value, m(n,k)) on the full valid grid defined by bounds.
+        """
+        self.paths_remaining, self.p_up, self.opt_value, self.valid = compute_paths_probs_values(self.N, self.lower_bound, self.upper_bound)
+        self.reachable = compute_reachability(self.N, self.valid)
+        self.threshold_all, self.threshold_reach = compute_thresholds(self.N, self.opt_value, self.valid, self.reachable)
+        return self
+
+    def predict(self, positions : NDArray[np.float64]):
+        """
+        Predict the optimal stopping position for given trajectory
+        """
+        labels = np.zeros(self.N)
+        for i in range(self.N):
+            if positions[i] == self.opt_value[(i, positions[i])]:
+                labels[i] = 1
+                break
+        return labels
+        
