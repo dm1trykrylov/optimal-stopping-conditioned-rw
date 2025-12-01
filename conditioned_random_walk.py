@@ -1,10 +1,8 @@
 import json
 import datetime
 import os
-import itertools
 from collections import defaultdict
 import math
-import csv
 from typing import Callable
 from numpy.typing import NDArray
 import numpy as np
@@ -182,7 +180,7 @@ class TheoreticalEstimator:
         """
         labels = np.zeros(self.N + 1)
         for i in range(self.N + 1):
-            if positions[i] == self.opt_value[(i, positions[i])]:
+            if positions[i] == self.opt_value[(i, int(positions[i]))]:
                 labels[i] = 1
                 break
         return labels
