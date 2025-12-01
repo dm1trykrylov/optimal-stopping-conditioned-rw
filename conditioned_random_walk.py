@@ -180,8 +180,8 @@ class TheoreticalEstimator:
         """
         Predict the optimal stopping position for given trajectory
         """
-        labels = np.zeros(self.N)
-        for i in range(self.N):
+        labels = np.zeros(self.N + 1)
+        for i in range(self.N + 1):
             if positions[i] == self.opt_value[(i, positions[i])]:
                 labels[i] = 1
                 break
