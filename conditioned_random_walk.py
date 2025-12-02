@@ -16,7 +16,7 @@ def set_out_dir(out_dir: str):
     log_path = os.path.join(out_dir, "run_log.jsonl")
 
 
-def log(event_type : str, payload : dict, mode : str = "a"):
+def log(event_type: str, payload: dict, mode: str = "a"):
     """
     Write a log entry as machine-readable JSON Lines.
 
@@ -159,6 +159,7 @@ def compute_thresholds(N: int, opt_value: dict[tuple[int, int], np.float64], val
 class TheoreticalEstimator:
     """ 
     """
+
     def __init__(self, N: int, lower_bound: Callable[[int], np.float64], upper_bound: Callable[[int], np.float64]) -> None:
         self.N = N
         self.lower_bound = lower_bound
@@ -169,12 +170,14 @@ class TheoreticalEstimator:
         Compute the combinatorial counts (paths_remaining), the conditioned up-probabilities (p_up), 
         and the optimal value (opt_value, m(n,k)) on the full valid grid defined by bounds.
         """
-        self.paths_remaining, self.p_up, self.opt_value, self.valid = compute_paths_probs_values(self.N, self.lower_bound, self.upper_bound)
+        self.paths_remaining, self.p_up, self.opt_value, self.valid = compute_paths_probs_values(
+            self.N, self.lower_bound, self.upper_bound)
         self.reachable = compute_reachability(self.N, self.valid)
-        self.threshold_all, self.threshold_reach = compute_thresholds(self.N, self.opt_value, self.valid, self.reachable)
+        self.threshold_all, self.threshold_reach = compute_thresholds(
+            self.N, self.opt_value, self.valid, self.reachable)
         return self
 
-    def predict(self, positions : NDArray[np.float64]):
+    def predict(self, positions: NDArray[np.float64]):
         """
         Predict the optimal stopping position for given trajectory
         """
@@ -184,4 +187,55 @@ class TheoreticalEstimator:
                 labels[i] = 1
                 break
         return labels
-        
+
+
+def check_single_path(n: int, positions, a_upper, b_upper, a_lower, b_lower):
+    x = np.arange(n + 1)
+
+    upper = a_upper * x + b_upper
+    lower = a_lower * x + b_lower
+
+    high_points = positions - upper > 0
+    low_points = lower - positions > 0
+    if high_points.sum() > 0 or low_points.sum() > 0:
+        return None
+
+    span = upper - lower
+    span[span == 0] = 1.0
+    max_future = np.maximum.accumulate(positions[::-1])[::-1]
+
+    y = (positions == max_future).astype(float)
+    pos_mean = positions.mean()
+    pos_std = positions.std() if positions.std() > 1e-6 else 1.0
+    price_std = (positions - pos_mean) / pos_std
+    time_left = (n - x) / float(n)
+    a_u = np.full(n + 1, a_upper, dtype=float)
+    b_u = np.full(n + 1, (b_upper - pos_mean) / pos_std, dtype=float)
+    a_l = np.full(n + 1, a_lower, dtype=float)
+    b_l = np.full(n + 1, (b_lower - pos_mean) / pos_std, dtype=float)
+    features = np.stack([price_std, time_left, a_u, b_u,
+                        a_l, b_l], axis=1).astype(np.float32)
+    return positions.astype(float), features, y.astype(np.float32)
+
+
+def build_dataset2(n_paths: int, seq_len: int, a_upper, b_upper, a_lower, b_lower, seed=42):
+    X_list = []
+    Y_list = []
+    POS_list = []
+    rng = np.random.default_rng(seed=seed)
+    for _ in range(n_paths):
+        p = 0.5
+        steps_N = np.where(rng.random(seq_len) < p, 1, -1)
+        steps = np.append(np.array([0.0]), steps_N)
+        positions = np.cumsum(steps).astype(float)
+        result = check_single_path(
+            seq_len, positions, a_upper, b_upper, a_lower, b_lower)
+        if result is not None:
+            positions, feats, y = result
+            X_list.append(feats)
+            Y_list.append(y)
+            POS_list.append(positions)
+    X = np.stack(X_list, axis=0)
+    Y = np.stack(Y_list, axis=0)
+    POS = np.stack(POS_list, axis=0)
+    return X, Y, POS
