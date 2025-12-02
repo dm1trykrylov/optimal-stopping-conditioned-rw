@@ -115,3 +115,15 @@
 %\setbeamertemplate{footline}[page number] % Uncomment this line to replace the footer line in all slides with a simple slide count
 \setbeamertemplate{caption}[numbered]
 %\setbeamertemplate{navigation symbols}{} % Uncomment this line to remove the navigation symbols from the bottom of all slides
+
+\usepackage{amsmath,amsthm,amssymb,amsfonts,mathtools}
+\mathtoolsset{showonlyrefs=true}
+
+% Probabilities
+\renewcommand{\Pr}[1]{\mathbb{P}\left\{#1\right\}}
+\newcommand{\I}[1]{\mathbb{I}\left\{#1\right\}}
+\newcommand{\Expect}[1]{\mathbb{E}\left(#1\right)}
+\newcommand{\ExpectH}[2]{\mathbb{E}_{#1}\left(#2\right)}
+\newcommand{\Var}[1]{\mathbb{V}\left(#1\right)}
+\newcommand{\Cov}[2]{\mathrm{cov}\left(#1,#2\right)}
+\newcommand{\Dist}{\mathbb{F}}

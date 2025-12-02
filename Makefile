@@ -16,3 +16,8 @@ intro-slides: intro-slides.tex slides-preamble.sty
 	pdflatex -output-directory=latex_output intro-slides.tex 1>/dev/null
 	pdflatex -output-directory=latex_output intro-slides.tex 1>/dev/null
 	cp latex_output/intro-slides.pdf intro-slides.pdf
+
+final-slides: final-slides.tex slides-preamble.sty
+	pdflatex -output-directory=latex_output final-slides.tex 1>/dev/null
+	pdflatex -output-directory=latex_output final-slides.tex 1>/dev/null
+	cp latex_output/final-slides.pdf final-slides.pdf
