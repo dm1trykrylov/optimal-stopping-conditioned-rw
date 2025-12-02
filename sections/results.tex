@@ -1,0 +1,109 @@
+%\begin{figure}[H]
+%    \centering
+%    \begin{subfigure}{0.4\textwidth}
+%        \includegraphics[width=\textwidth]{./images/roc_N50.png}
+%        \caption{$N=50$}
+%    \end{subfigure}
+%    \begin{subfigure}{0.4\textwidth}
+%        \includegraphics[width=\textwidth]{./images/roc_N100.png}
+%        \caption{$N=100$}
+%    \end{subfigure}
+%    \begin{subfigure}{0.4\textwidth}
+%        \includegraphics[width=\textwidth]{./images/roc_N200.png}
+%        \caption{$N=200$}
+%    \end{subfigure}
+%    \begin{subfigure}{0.4\textwidth}
+%        \includegraphics[width=\textwidth]{./images/roc_N400.png}
+%        \caption{$N=400$}
+%    \end{subfigure}
+%
+%    \caption{ROC}
+%    \label{fig:roc-curves}
+%\end{figure}
+
+Мы протестировали описанную выше модель и теоретические расчёты на сгенерированных данных.
+Во всех датасетах было по 500 траекторий, а длина траектории ($N$) изменялась от 50 до 400.
+
+\begin{figure}[H]
+
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{./images/profit_vs_threshold_validation_N50.png}
+		\caption{$N=50$}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{./images/profit_vs_threshold_validation_N100.png}
+		\caption{$N=100$}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{./images/profit_vs_threshold_validation_N200.png}
+		\caption{$N=200$}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{./images/profit_vs_threshold_validation_N400.png}
+		\caption{$N=400$}
+	\end{subfigure}
+	\caption{Прибыль модели и прибыль при использовании теоретических расчётов $m(n, k)$}
+
+	\label{fig:profit}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{lcccc}
+		\toprule
+		$N$ & model average & model median & theor average & oracle average \\
+		\midrule
+		100 & 6.68          & 6.00         & 6.55          & 7.96           \\
+		200 & 7.99          & 6.00         & 7.83          & 10.36          \\
+		400 & 11.51         & 10.00        & 11.00         & 14.80          \\
+		\bottomrule
+	\end{tabular}
+	\caption{Прибыль модели при наилучшем пороговом значении (threshold) и прибыли при использовании теоретических расчётов $m(n, k)$.}
+	\label{tab:profit-comparison}
+\end{table}
+
+По рис. \ref{fig:profit} видно, что оптимальное пороговое значение у модели сдвигается влево при росте $N$, но для $N \in \{100, 200, 400\}$ оптимальным оказалось значение 0.6.
+Результаты для этого значения приведены в таблице \ref{tab:profit-comparison}. В последнем столбце в ней указано среднее из максимумов по каждой траектории.
+В среднем модель показала лучшие результаты, чем теоретические расчёты.
+Различие наименьшее при $N=100$ и достаточно существенно при $N=400$.
+
+Преимущество ML-модели при небольших
+
+\begin{figure}[H]
+
+	\centering
+	\includegraphics[width=\textwidth]{./images/sample_trajectories_N100.png}
+	\caption{Примеры модельных и теоретических расчётов для конкретных траекторий, $N=100$}
+
+	\label{fig:sample-trajectories-100}
+
+\end{figure}
+
+\begin{figure}[H]
+
+	\centering
+	\includegraphics[width=\textwidth]{./images/sample_trajectories_N200.png}
+	\caption{Примеры модельных и теоретических расчётов для конкретных траекторий, $N=200$}
+
+	\label{fig:sample-trajectories-200}
+
+\end{figure}
+
+\begin{figure}[H]
+
+	\centering
+	\includegraphics[width=\textwidth]{./images/sample_trajectories_N400.png}
+	\caption{Примеры модельных и теоретических расчётов для конкретных траекторий, $N=400$}
+
+	\label{fig:sample-trajectories-400}
+
+\end{figure}
+
+
+%N=100
+%model_avg=6.68, model_med=6.0, theor_mean=6.546666622161865, oracle_mean=7.960000038146973
+%N=200
+%model_avg=7.986666666666666, model_med=6.0, theor_mean=7.826666831970215, oracle_mean=10.359999656677246
+%N=400
+%model_avg=11.506666666666666, model_med=10.0, theor_mean=11.0, oracle_mean=14.800000190734863

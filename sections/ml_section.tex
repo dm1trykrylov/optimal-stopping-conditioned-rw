@@ -1,0 +1,237 @@
+% MIPT — Введение в финансы — Домашнее задание №2
+% Файл: MIPT_Finance_HW1.tex
+% Совместим с Overleaf (pdflatex)
+
+\documentclass[12pt,a4paper]{article}
+
+% --- кодировка и язык ---
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+% --- типография и шрифты ---
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- поля и оформление страницы ---
+\usepackage{geometry}
+\geometry{left=2.2cm, right=2.2cm, top=2.2cm, bottom=2.2cm}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- заголовки, колонтитулы ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{МФТИ --- Введение в финансы}
+\fancyhead[R]{Домашнее задание №5}
+\fancyfoot[C]{\thepage}
+
+% --- математика ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\allowdisplaybreaks
+
+% --- другие полезные пакеты ---
+\usepackage{siunitx}        % аккуратные числа и валюты
+\usepackage{booktabs}       % красивые таблицы
+\usepackage{graphicx}       % вставка рисунков
+\usepackage{caption,subcaption}
+\usepackage{tikz}           % простые схемы
+\usepackage{enumitem}       % контроль списков
+\usepackage{mdframed}       % рамки для решений
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\usepackage{cleveref}
+
+\title{Проект по Финансам}
+\author{Стрелков Андрей}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Описание системы и методов}
+
+\subsection{Постановка задачи}
+
+Рассматривается задача оптимальной остановки на случайном процессе цен. 
+Дано ценовое траектория $X_0, X_1, \dots, X_{T}$, являющаяся марковским процессом. 
+Требуется найти момент времени $\tau \le T$, максимизирующий доход:
+\[
+\text{profit}(\tau) = X_\tau - X_0.
+\]
+Оптимальная стратегия не известна. 
+
+Цель: обучить модель, которая на каждом шаге времени решает, останавливать ли процесс. 
+Это бинарная классификация:
+\[
+y_t = \begin{cases}
+1, & \text{если } t = \text{оптимальная точка остановки},\\
+0, & \text{иначе}.
+\end{cases}
+\]
+
+\subsection{Генерация данных}
+
+Для каждой траектории генерируется случайное блуждание длины $N$:
+\[
+X_{t+1} = X_t + \xi_t, \quad \xi_t = 
+\begin{cases}
++1 & \text{с вероятностью } p, \\
+-1 & \text{с вероятностью } 1-p,
+\end{cases}
+\]
+где $p \sim U(0.4, 0.6)$ для каждой новой симуляции.
+
+Таргет - $y_t = bool(X_t == max_{\tau \in [t, N]}(X_\tau))$
+
+Также строятся верхняя и нижняя линейные границы методом наименьших квадратов:
+\[
+X_t \approx a t + b,
+\]
+\[
+\text{upper}_t = a t + b + R_{\max} = a_ut+b_u, \qquad 
+\text{lower}_t = a t + b + R_{\min} = a_lt+b_l,
+\]
+где $R_{\max}, R_{\min}$ — максимальные и минимальные остатки.
+
+Каждый временной шаг кодируется шестью признаками:
+\[
+f_t = \{ 
+X_t, N-t, a_u, b_u, a_l, b_l
+\}
+\]
+
+Такая кодировка является общей для любого выбора границ в рамках этой задачи.
+\subsection{Архитектура модели}
+
+Используется однонаправленная рекуррентная нейросеть GRU:
+
+\[
+\text{GRU}_{\theta}: \mathbb{R}^{N \times d} \to \mathbb{R}^{N \times 1},
+\]
+где $d=6$ --- размерность входных признаков.
+
+\begin{figure}[h]
+
+\centering
+
+\includegraphics[width=0.8\linewidth]{GRU.png}
+
+\caption{GRU}
+
+\label{fig:mpr}
+
+\end{figure}
+
+Формально:
+\[
+h_t = \text{GRUCell}(f_t, h_{t-1}), 
+\qquad
+\hat y_t = \sigma(W h_t + b).
+\]
+
+Параметры модели:
+\begin{itemize}
+    \item input size: $6$
+    \item hidden size: $32$
+    \item num layers: $1$
+    \item activation на выходе: sigmoid
+\end{itemize}
+
+Выход модели — вероятности остановки:
+\[
+\hat y_t = \mathbb{P}(\text{stop at } t).
+\]
+
+Фактическая точка остановки определяется как
+\[
+\tau_{\text{model}} = 
+\begin{cases}
+\min\{t: \hat y_t \ge \text{threshold}\}, & \text{если есть срабатывание}, \\
+N-1, & \text{иначе}.
+\end{cases}
+\]
+
+\begin{figure}[h]
+
+\centering
+
+\includegraphics[width=0.8\linewidth]{загруженное (2).png}
+
+\caption{Пример работы модели}
+
+\label{fig:mpr}
+
+\end{figure}
+
+\subsection{Функция потерь}
+
+Используется бинарная кросс-энтропия:
+\[
+\mathcal{L} = -\frac{1}{N}\sum_{t=0}^{N-1}
+\left[
+y_t \log(\hat y_t) + (1-y_t)\log(1-\hat y_t)
+\right].
+\]
+
+Оптимизация: Adam.
+
+\subsection{Метрики}
+
+Оценка проводится на валидационном наборе.
+
+\subsubsection{ROC-AUC}
+
+Для всех временных шагов $t$ сравнивается распределение:
+\[
+(\hat y_t, y_t),
+\]
+и вычисляется ROC-AUC.
+
+\begin{figure}[h]
+
+\centering
+
+\includegraphics[width=0.8\linewidth]{roc.png}
+
+\caption{ROC}
+
+\label{fig:mpr}
+
+\end{figure}
+\subsection{Прибыль модели}
+
+Для каждой траектории $X_t$:
+\[
+\text{profit}_{\text{model}} = X_{\tau_{\text{model}}} - X_0.
+\]
+
+Максимальная возможная прибыль:
+\[
+\text{profit}_{\max} = \max_t X_t - X_0.
+\]
+
+Средняя прибыль на тесте:
+\[
+\mathbb{E}[\text{profit}].
+\]
+
+\begin{figure}[h]
+
+\centering
+
+\includegraphics[width=0.8\linewidth]{загруженное (1).png}
+
+\caption{Прибыль модели}
+
+\label{fig:mpr}
+
+\end{figure}
+
+
+
+
+\end{document}

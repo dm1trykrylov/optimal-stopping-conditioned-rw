@@ -1,24 +1,58 @@
 \ProvidesPackage{preamble}
 % import main packages
-\usepackage[cm]{fullpage}
+%\usepackage[cm]{fullpage}
 \usepackage[classfont=bold,langfont=sanserif,full]{complexity}
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
-%\usepackage[document]{ragged2e}
+
+% --- типография и шрифты ---
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- поля и оформление страницы ---
+\usepackage{geometry}
+\geometry{left=2.2cm, right=2.2cm, top=2.2cm, bottom=2.2cm}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- заголовки, колонтитулы ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{МФТИ --- Введение в финансы}
+\fancyhead[R]{Проект}
+\fancyfoot[C]{\thepage}
+
+
+% --- математика ---
 \usepackage{amsmath,amsthm,amssymb,amsfonts,mathtools}
 \newtheorem{lemma}{Лемма}[section]
 \newtheorem{theorem}{Теорема}[section]
 
-\mathtoolsset{showonlyrefs=true} % enumerate only equations mentioned with \eqref{}
-%\usepackage{mismath}
-% set up hyperlinks
+% --- другие полезные пакеты ---
+\usepackage{siunitx}        % аккуратные числа и валюты
+\usepackage{booktabs}       % красивые таблицы
+\usepackage{subcaption}
+\usepackage{graphicx}       % вставка рисунков
+\usepackage{caption,subcaption}
+\usepackage{tikz}           % простые схемы
+\usepackage{enumerate}       % контроль списков
+\usepackage{mdframed}       % рамки для решений
 \usepackage{hyperref}
-
 \hypersetup{colorlinks=true,
             linkcolor=blue,
             urlcolor=blue,
             citecolor=red}
+\usepackage{cleveref}
+
+\mathtoolsset{showonlyrefs=true} % enumerate only equations mentioned with \eqref{}
+%\usepackage{mismath}
+% set up hyperlinks
+
+
 
 % import tikz stuff
 %\usepackage{tikz}
@@ -30,10 +64,9 @@
 \usepackage{algorithmic}
 
 \usepackage{enumerate}
-\usepackage{booktabs}
 
 \usepackage{float} % use option [H] to display figures precisely at the specified location
-\usepackage{enumitem} % change the style of counters
+
 
 % Bibliography management
 \usepackage[
@@ -46,10 +79,6 @@ sorting=ynt
 
 % define commands
 \newcommand{\bigline}{\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}}
-\newcommand{\la}{\leftarrow}
-\newcommand{\ra}{\rightarrow}
-\renewcommand{\epsilon}{\varepsilon}
-\renewcommand{\phi}{\varphi}
 \renewcommand{\leq}{\leqslant}
 \renewcommand{\geq}{\geqslant}
 \newcommand{\N}{\mathbb{N}}
