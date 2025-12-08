@@ -175,6 +175,7 @@ class TheoreticalEstimator:
         self.reachable = compute_reachability(self.N, self.valid)
         self.threshold_all, self.threshold_reach = compute_thresholds(
             self.N, self.opt_value, self.valid, self.reachable)
+        # self.L = int(np.ceil(self.lower_bound(self.N)))
         return self
 
     def predict(self, positions: NDArray[np.float64]):
