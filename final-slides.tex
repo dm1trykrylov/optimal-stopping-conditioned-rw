@@ -116,6 +116,9 @@
 
 	Правило: продавать, если $ m(n, k) = k $. По определению $ m(n,k) \geq k $.
 
+	Сложность вычислений: предподсчёт за $\mathcal{O}\left((x - y) N^{2}\right)$,
+	решение для конкретного шага за $\mathcal{O}\left(1\right)$.
+
 \end{frame}
 
 \begin{frame}
@@ -176,8 +179,8 @@
 
 	\begin{figure}
 		\centering
-		\includegraphics[width=\linewidth]{./images/sample_trajectories_small_01_cropped.png}
-		\caption{$N=100$}
+		\includegraphics[width=\linewidth]{./images/sample_trajectories_N100_cropped.png}
+		\caption{$N=100$, epochs=$50$}
 	\end{figure}
 
 \end{frame}
@@ -188,7 +191,40 @@
 	\begin{figure}
 		\centering
 		\includegraphics[width=\linewidth]{./images/profit_vs_threshold_validation_N100.png}
-		\caption{$N=100$}
+		\caption{$N=100$, epochs=$50$}
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Результаты}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{./images/profit_vs_threshold_validation_N200.png}
+		\caption{$N=200$, epochs=$50$}
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Результаты}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{./images/profit_vs_threshold_validation_N400.png}
+		\caption{$N=400$, epochs=$50$}
+	\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Результаты}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{./images/profit_vs_threshold_validation_N400b.png}
+		\caption{$N=400$, epochs=$100$}
 	\end{figure}
 
 \end{frame}
@@ -199,14 +235,15 @@
 		\centering
 		\begin{tabular}{lccc}
 			\toprule
-			$N$ & model average & theor average & oracle average \\
+			$N$ & epochs & model average & theor average \\
 			\midrule
-			100 & 6.68          & 6.55          & 7.96           \\
-			200 & 7.99          & 7.83          & 10.36          \\
-			400 & 11.51         & 11.00         & 14.80          \\
+			100 & 50     & \textbf{0.79} & \textbf{0.82} \\
+			200 & 50     & 0.73          & 0.76          \\
+			400 & 50     & \textbf{0.55} & 0.74          \\
+			400 & 100    & \textbf{0.74} & 0.74          \\
 			\bottomrule
 		\end{tabular}
-		\caption{Прибыль модели при наилучшем пороговом значении (threshold) и прибыли при использовании теоретических расчётов $m(n, k)$.}
+		\caption{Прибыль модели при наилучшем пороговом значении (threshold) и прибыль при использовании теоретических расчётов $m(n, k)$. Нормировка на максимальную среднюю прибыль}
 		\label{tab:profit-comparison}
 	\end{table}
 \end{frame}
@@ -215,6 +252,7 @@
 	\frametitle{План}
 
 	\begin{enumerate}
+		\item Новый подход к генерации данных и обучению модели: обучить модель для предсказания оптимальной границы остановки.
 		\item Адаптация для реальных данных.
 	\end{enumerate}
 
