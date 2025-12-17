@@ -21,3 +21,8 @@ final-slides: final-slides.tex slides-preamble.sty
 	pdflatex -output-directory=latex_output final-slides.tex 1>/dev/null
 	pdflatex -output-directory=latex_output final-slides.tex 1>/dev/null
 	cp latex_output/final-slides.pdf final-slides.pdf
+
+report-slides: report-slides.tex slides-preamble.sty
+	pdflatex -output-directory=latex_output report-slides.tex 1>/dev/null
+	pdflatex -output-directory=latex_output report-slides.tex 1>/dev/null
+	cp latex_output/report-slides.pdf report-slides.pdf
