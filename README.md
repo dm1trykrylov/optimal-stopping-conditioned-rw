@@ -10,24 +10,21 @@
 
 ### Теоретический подход
 - Формализация задачи оптимальной остановки ($S_{t}$ --- симметричное случайное блуждание)
-$$
-    X_{t} = \left( S_{t} \mid \forall k \in \{0,\ldots,N\} \; a + b\cdot k \leq S_{k} \leq x + d\cdot k \right)
-$$
+```math
+    X_{t} = \left( S_{t} \mid a + b\cdot k \leq S_{k} \leq x + d\cdot k,\; 0 \leq k \leq N\right)
+```
 - Вывод оптимального правила
-$$
+```math
     m(n, k) = \sup\limits_{n \leq t \leq N} E \left( X_{t} \mid X_{n} = k \right),\; m(n, k) = k \Rightarrow \text{ Остановка }
-$$
+```
 - Получение рекурсивных формул для правила
-$$
+```math
     m(n, k) = \max\left(k, p \cdot m(n + 1, k + 1) + (1 - p) \cdot m(n + 1, k - 1) \right),
-$$
-$$
-    p = p(n, k) = \frac{l(n + 1, k + 1)}{l(n, k)}, 
-$$
-$$
-    l(n, k) = l(n + 1, k + 1) + l(n + 1, k - 1) \text{ (если существуют)}
-$$
-- Аналитическое исследование свойств стратегии, подробнее - в [отчёте](main.tex) по проекту.
+```
+```math
+    p(n, k) = P\left(X_{n + 1} = k + 1 \mid X_{n} = k \right)
+```
+- Аналитическое исследование свойств стратегии, подробнее - в [отчёте](final-report.pdf) по проекту.
 
 ### Машинное обучение
 - Модель GRU
